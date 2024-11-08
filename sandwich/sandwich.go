@@ -1,12 +1,19 @@
 package sandwich
 
+import "fmt"
+
 type Sandwich struct {
-	Precio Precio
+	Precio float64
 }
 
-type Precio float64
+/* Retorna importe total de la compra de sandwiches segun la cantidad ingresada, estimado en dolares*/
+func (s *Sandwich) GetTotalValue(cant uint) float64 {
+	fmt.Println(s)
+	return s.Precio * float64(cant)
+}
 
-func NuevoSandwich(precio Precio) Sandwich {
+/* Genera un nuevo Sandwich */
+func NuevoSandwich(precio float64) Sandwich {
 	return Sandwich{
 		Precio: precio,
 	}
