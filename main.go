@@ -1,5 +1,10 @@
 package main
 
+import (
+	"fmt"
+	"sandwich-dolar/dolar"
+)
+
 /* sandwich vale 5 dolares (Usar api para conseguir precio local)
 Primer Menú (Solo la primera vez al ingresar al programa)
 1 Argentina
@@ -37,4 +42,10 @@ func main() {
 	// imprimir total, solicitar importe con el que va a abonar y calcular e imprimir el vuelto
 
 	// Confirmacion de nueva orden
+
+	dolar, err := dolar.GetValue("Bolivia")
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(dolar)
 }
