@@ -18,9 +18,46 @@ type Dolar struct {
 	Venta  float64 `json:"venta"`
 }
 
+// Implementar el uso del siguiente struct:
+/* type Pais struct {
+	SubDomain string `json:"subDomain"`
+	Libre     bool   `json:"libre"`
+	CodigoISO string `json:"codigoISO"`
+}
+*/
+
 var (
-	// err
-	errCountry = errors.New("invalid country")
+	errCountry   = errors.New("invalid country")
+	errCodigoISO = errors.New("no 'codigoISO' for the country")
+	errSubDomain = errors.New("no subdomain for the country")
+
+	paises = map[string]map[string]interface{}{
+		"Argentina": {
+			"subDomain": "",
+			"libre":     false,
+			"codigoISO": "ARS",
+		},
+		"Chile": {
+			"subDomain": "cl",
+			"libre":     true,
+			"codigoISO": "CLP",
+		},
+		"Mexico": {
+			"subDomain": "mx",
+			"libre":     true,
+			"codigoISO": "MXN",
+		},
+		"Bolivia": {
+			"subDomain": "bo",
+			"libre":     false,
+			"codigoISO": "BOP",
+		},
+		"Uruguay": {
+			"subDomain": "uy",
+			"libre":     true,
+			"codigoISO": "UYU",
+		},
+	}
 )
 
 /* Generar funcion Must para reducir codigo {if err != nil} */
@@ -52,39 +89,22 @@ func dolarApiStatus() (bool, error) {
 }
 
 func getApiUrl(pais string) (string, error) {
-	paises := map[string]map[string]interface{}{
-		"Argentina": {
-			"subDomain": "",
-			"libre":     false,
-		},
-		"Chile": {
-			"subDomain": "cl",
-			"libre":     true,
-		},
-		"Mexico": {
-			"subDomain": "mx",
-			"libre":     true,
-		},
-		"Bolivia": {
-			"subDomain": "bo",
-			"libre":     false,
-		},
-		"Uruguay": {
-			"subDomain": "uy",
-			"libre":     true,
-		},
-	}
 
 	// Validamos si el país existe en el mapa
 	if _, existe := paises[pais]; !existe {
 		return "", fmt.Errorf("error: %w", errCountry)
 	}
 
-	if pais == "Argentina" {
+	subDomain, ok := paises[pais]["subDomain"]
+	if !ok {
+		return "", fmt.Errorf("error: %w", errSubDomain)
+	}
+
+	if subDomain == "" {
 		return "https://dolarapi.com/v1/dolares/oficial", nil
 	}
 
-	if libre := paises[pais]["libre"].(bool); libre {
+	if paises[pais]["libre"].(bool) {
 		return fmt.Sprintf("https://%s.dolarapi.com/v1/cotizaciones/usd", paises[pais]["subDomain"]), nil
 	}
 
@@ -130,4 +150,19 @@ func GetValue(pais string) (float64, error) {
 
 	// retornar tipo de cambio
 	return float64(value), nil
+}
+
+func GetCurrency(pais string) (string, error) {
+
+	if _, existe := paises[pais]; !existe {
+		return "", fmt.Errorf("error: %w", errCountry)
+	}
+
+	currency, ok := paises[pais]["codigoISO"]
+
+	if !ok {
+		return "", fmt.Errorf("error: %w", errCodigoISO)
+	}
+
+	return currency.(string), nil
 }
