@@ -1,7 +1,5 @@
 package cliente
 
-import "sandwich-dolar/sandwich"
-
 type Comprar interface {
 	OrdenarSandwich() //Orden
 }
@@ -17,7 +15,7 @@ type Pais string
 
 type Cantidad int
 
-func (c *Cliente) OrdenarSandwich(cantidad Cantidad, precio sandwich.Precio)/* Orden */ {}
+// func (c *Cliente) OrdenarSandwich(cantidad Cantidad, precio sandwich.Precio)/* Orden */ {}
 
 func NuevoCliente(nombre Nombre, pais Pais) Cliente {
 	return Cliente{
