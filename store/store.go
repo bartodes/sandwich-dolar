@@ -1,5 +1,7 @@
 package store
 
-type DB interface{}
+type DB interface {
+	DbConnect()
+}
 
 type PostgresDB struct{}
