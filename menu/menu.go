@@ -71,12 +71,12 @@ func MainMenu(precioSandwitch, precioDolar float64, moneda string) (string, uint
 
 	precioSandwitchPesos := precioSandwitch * precioDolar
 
-	fmt.Printf("\nCada Sandwich está: $%2.f %s (%2.f USD)\n", precioSandwitchPesos, moneda, precioSandwitch)
+	fmt.Printf("\nCada Sandwich está: $%.2f %s ($%.2f USD)\n", precioSandwitchPesos, moneda, precioSandwitch)
 	fmt.Print("Seleccionar una opción:\n1 Nueva Compra\n2 Salir\n? ")
 
 	opcion = mustConv[uint64](mustScan())
 
-	if opcion > 1 {
+	if opcion > 2 || opcion < 1 {
 		panic(errOpcion)
 	}
 
@@ -130,7 +130,7 @@ func MainMenu(precioSandwitch, precioDolar float64, moneda string) (string, uint
 		return name, cant, totalDolares, nil
 	}
 
-	fmt.Println("Goodbye!")
+	fmt.Println("\nGoodbye!")
 	os.Exit(0)
 
 	return name, cant, totalDolares, nil
