@@ -19,43 +19,34 @@ type Dolar struct {
 }
 
 // Implementar el uso del siguiente struct:
-/* type Pais struct {
-	SubDomain string `json:"subDomain"`
-	Libre     bool   `json:"libre"`
+type Pais struct {
+	Url       string `json:"url"`
 	CodigoISO string `json:"codigoISO"`
 }
-*/
 
 var (
-	errCountry   = errors.New("invalid country")
-	errCodigoISO = errors.New("no 'codigoISO' for the country")
-	errSubDomain = errors.New("no subdomain for the country")
+	errCountry = errors.New("invalid country")
 
-	paises = map[string]map[string]interface{}{
+	paises = map[string]Pais{
 		"Argentina": {
-			"subDomain": "",
-			"libre":     false,
-			"codigoISO": "ARS",
+			Url:       "https://dolarapi.com/v1/dolares/oficial",
+			CodigoISO: "ARS",
 		},
 		"Chile": {
-			"subDomain": "cl",
-			"libre":     true,
-			"codigoISO": "CLP",
+			Url:       "https://cl.dolarapi.com/v1/cotizaciones/usd",
+			CodigoISO: "CLP",
 		},
 		"Mexico": {
-			"subDomain": "mx",
-			"libre":     true,
-			"codigoISO": "MXN",
+			Url:       "https://mx.dolarapi.com/v1/cotizaciones/usd",
+			CodigoISO: "MXN",
 		},
 		"Bolivia": {
-			"subDomain": "bo",
-			"libre":     false,
-			"codigoISO": "BOP",
+			Url:       "https://bo.dolarapi.com/v1/dolares/oficial",
+			CodigoISO: "BOP",
 		},
 		"Uruguay": {
-			"subDomain": "uy",
-			"libre":     true,
-			"codigoISO": "UYU",
+			Url:       "https://uy.dolarapi.com/v1/cotizaciones/usd",
+			CodigoISO: "UYU",
 		},
 	}
 )
@@ -88,40 +79,16 @@ func dolarApiStatus() (bool, error) {
 	return true, nil
 }
 
-func getApiUrl(pais string) (string, error) {
-
-	// Validamos si el país existe en el mapa
-	if _, existe := paises[pais]; !existe {
-		return "", fmt.Errorf("error: %w", errCountry)
-	}
-
-	subDomain, ok := paises[pais]["subDomain"]
-	if !ok {
-		return "", fmt.Errorf("error: %w", errSubDomain)
-	}
-
-	if subDomain == "" {
-		return "https://dolarapi.com/v1/dolares/oficial", nil
-	}
-
-	if paises[pais]["libre"].(bool) {
-		return fmt.Sprintf("https://%s.dolarapi.com/v1/cotizaciones/usd", paises[pais]["subDomain"]), nil
-	}
-
-	return fmt.Sprintf("https://%s.dolarapi.com/v1/dolares/oficial", paises[pais]["subDomain"]), nil
-}
-
 func GetValue(pais string) (float64, error) {
 	var dolar Dolar
 	if ok, err := dolarApiStatus(); !ok {
 		return 0.0, err
 	}
 
-	url, err := getApiUrl(pais)
-
-	if err != nil {
-		return 0.0, err
+	if _, existe := paises[pais]; !existe {
+		return 0.0, fmt.Errorf("error: %w", errCountry)
 	}
+	url := paises[pais].Url
 
 	resp, err := http.Get(url)
 
@@ -158,11 +125,5 @@ func GetCurrency(pais string) (string, error) {
 		return "", fmt.Errorf("error: %w", errCountry)
 	}
 
-	currency, ok := paises[pais]["codigoISO"]
-
-	if !ok {
-		return "", fmt.Errorf("error: %w", errCodigoISO)
-	}
-
-	return currency.(string), nil
+	return paises[pais].CodigoISO, nil
 }
