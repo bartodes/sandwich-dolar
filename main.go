@@ -1,9 +1,11 @@
 package main
 
 import (
+	"fmt"
 	"sandwich-dolar/dolar"
 	"sandwich-dolar/menu"
 	"sandwich-dolar/sandwich"
+	"sandwich-dolar/store"
 )
 
 /* sandwich vale 5 dolares (Usar api para conseguir precio local)
@@ -27,9 +29,8 @@ Total (Guardarlo en Dolares)
 
 Pedir dinero
 Mostrar el vuelto
-Desea continuar? y --> insert en una mysql con xampp "o" guardar en un txt
-
-Todo plus que crean que es necesario es bienvenido */
+Insertar en DB
+Volver a mostrar menu principal */
 
 func Must[T any](x T, err error) T {
 	if err != nil {
@@ -39,18 +40,20 @@ func Must[T any](x T, err error) T {
 }
 
 func main() {
-	// fmt.Println(uint(5.5))
-	s := sandwich.NuevoSandwich(5.0)
-	country := Must(menu.CountryMenu())
+	db := store.OpenDB("mypassword", "sandwich-dolar")
+	defer db.Close()
 
+	store.TestDb(db)
+
+	s := sandwich.NuevoSandwich(5.0)
+
+	country := Must(menu.CountryMenu())
 	valueDolar := Must(dolar.GetValue(country))
 	currency := Must(dolar.GetCurrency(country))
 
-	menu.MainMenu(s.Precio, valueDolar, currency)
-
-	// Scan de nombre del cliente y catnidad total de sandwitches
-	// imprimir total, solicitar importe con el que va a abonar y calcular e imprimir el vuelto
-
-	// Confirmacion de nueva orden
-
+	for {
+		orden := Must(menu.MainMenu(s.Precio, valueDolar, currency))
+		id := store.InstertVenta(db, orden)
+		fmt.Printf("Orden guardada en la base de datos, con id: %d\n", id)
+	}
 }
