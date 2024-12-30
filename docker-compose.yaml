@@ -1,0 +1,12 @@
+name: postgresdb
+services:
+    postgres:
+        container_name: postgres-container
+        environment:
+            - POSTGRES_PASSWORD=mypassword
+            - POSTGRES_DB=sandwich-dolar
+        ports:
+            - 5432:5432
+        image: postgres
+        volumes: 
+          - ./schema.sql:/docker-entrypoint-initdb.d/create_tables.sql
