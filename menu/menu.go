@@ -7,6 +7,12 @@ import (
 	"strconv"
 )
 
+type Orden struct {
+	Nombre   string
+	Cantidad uint64
+	Total    float64
+}
+
 var (
 	errOpcion = errors.New("la opción ingresada no esta permitida")
 	opts      = map[string]interface{}{
@@ -64,7 +70,7 @@ func CountryMenu() (string, error) {
 	return opts[opcionPais].(string), nil
 }
 
-func MainMenu(precioSandwitch, precioDolar float64, moneda string) (string, uint64, float64, error) {
+func MainMenu(precioSandwitch, precioDolar float64, moneda string) (Orden, error) {
 	var opcion, cant uint64
 	var name string
 	var montoPago, totalDolares float64
@@ -105,7 +111,7 @@ func MainMenu(precioSandwitch, precioDolar float64, moneda string) (string, uint
 
 		fmt.Println()
 
-		totalDolares := precioSandwitch * float64(cant)
+		totalDolares = precioSandwitch * float64(cant)
 		totalPesos := precioSandwitchPesos * float64(cant)
 
 		fmt.Printf("El precio total es: %2.f\n", totalPesos)
@@ -127,11 +133,11 @@ func MainMenu(precioSandwitch, precioDolar float64, moneda string) (string, uint
 			fmt.Printf("\nSu vuelto: %2.f %s\n", vuelto, moneda)
 		}
 
-		return name, cant, totalDolares, nil
+		return Orden{Nombre: name, Cantidad: cant, Total: totalDolares}, nil
 	}
 
 	fmt.Println("\nGoodbye!")
 	os.Exit(0)
 
-	return name, cant, totalDolares, nil
+	return Orden{}, nil
 }
